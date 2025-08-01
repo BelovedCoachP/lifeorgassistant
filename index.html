@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Organization Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 18px;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 20px;
+            min-height: calc(100vh - 20px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .main-menu {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .category-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .category-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        .category-card.financial {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        }
+
+        .category-card.thoughts {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+        }
+
+        .category-card.digital {
+            background: linear-gradient(135deg, #45b7d1 0%, #96c93d 100%);
+        }
+
+        .category-card.content {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .category-card.business {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+        }
+
+        .category-card.routine {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+        }
+
+        .progress-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 25px;
+            background: #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+            border-radius: 12px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .question-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #007bff;
+        }
+
+        .question-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+
+        .input-group {
+            margin: 15px 0;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 18px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .voice-btn {
+            position: absolute;
+            right: 10px;
+            top: 45px;
+            background: #28a745;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .voice-btn:hover {
+            background: #218838;
+        }
+
+        .voice-btn.recording {
+            background: #dc3545;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+
+        .btn.secondary {
+            background: #6c757d;
+        }
+
+        .btn.secondary:hover {
+            background: #545b62;
+        }
+
+        .btn.success {
+            background: #28a745;
+        }
+
+        .btn.success:hover {
+            background: #218838;
+        }
+
+        .todo-list {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .todo-item:last-child {
+            border-bottom: none;
+        }
+
+        .todo-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+
+        .todo-text {
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .llm-prompt {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .radio-option:hover {
+            background: #e9ecef;
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #28a745;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            z-index: 1000;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                margin: 5px;
+                border-radius: 10px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .category-card {
+                font-size: 18px;
+                padding: 18px;
+            }
+
+            .btn {
+                font-size: 16px;
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Life Organization Assistant</h1>
+            <p>Breaking everything down into manageable steps</p>
+            <div class="progress-section">
+                <h4>Overall Progress</h4>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="overallProgress" style="width: 0%;">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Menu -->
+        <div id="mainMenu" class="section active">
+            <div class="main-menu">
+                <button class="category-card financial" onclick="startSection('financial')">
+                    🚨 Financial Crisis Management
+                    <div style="font-size: 14px; margin-top: 5px; opacity: 0.9;">Prioritize bills, save your house</div>
+                </button>
+                
+                <button class="category-card thoughts" onclick="startSection('thoughts')">
+                    🧠 Organize My Thoughts
+                    <div style="font-size: 14px; margin-top: 5px; opacity: 0.9;">Brain dump and categorize</div>
+                </button>
+                
+                <button class="category-card digital" onclick="startSection('digital')">
+                    🔐 Digital Life Management
+                    <div style="font-size: 14px; margin-top: 5px; opacity: 0.9;">Passwords and social media</div>
+                </button>
+                
+                <button class="category-card content" onclick="startSection('content')">
+                    📹 Content Planning
+                    <div style="font-size: 14px; margin-top: 5px; opacity: 0.9;">Video topics and scheduling</div>
+                </button>
+                
+                <button class="category-card business" onclick="startSection('business')">
+                    💪 Business Development
+                    <div style="font-size: 14px; margin-top: 5px; opacity: 0.9;">Products and training services</div>
+                </button>
+                
+                <button class="category-card routine" onclick="startSection('routine')">
+                    📅 Daily & Weekly Routines
+                    <div style="font-size: 14px; margin-top: 5px; opacity: 0.9;">Structure your time</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Financial Section -->
+        <div id="financial" class="section">
+            <button class="back-btn" onclick="showMainMenu()">← Back to Main Menu</button>
+            <div class="question-card">
+                <h3>🚨 Let's Save Your House - Financial Priority Check</h3>
+                
+                <div class="input-group">
+                    <label>What's your most urgent bill right now?</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="urgentBill" value="mortgage">
+                            Mortgage/Rent Payment
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="urgentBill" value="utilities">
+                            Utilities (Electric, Water, Gas)
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="urgentBill" value="credit">
+                            Credit Cards
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="urgentBill" value="other">
+                            Other (specify below)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>How many days until your next mortgage/rent payment?</label>
+                    <input type="number" id="daysUntilPayment" placeholder="Enter number of days">
+                    <button class="voice-btn" onclick="startVoiceRecognition('daysUntilPayment')">🎤</button>
+                </div>
+
+                <div class="input-group">
+                    <label>What's your total monthly income right now?</label>
+                    <input type="number" id="monthlyIncome" placeholder="Enter amount">
+                    <button class="voice-btn" onclick="startVoiceRecognition('monthlyIncome')">🎤</button>
+                </div>
+
+                <div class="input-group">
+                    <label>List your essential monthly expenses (one per line):</label>
+                    <textarea id="essentialExpenses" rows="6" placeholder="Rent: $1200
+Utilities: $150
+Groceries: $300
+Car payment: $250"></textarea>
+                    <button class="voice-btn" onclick="startVoiceRecognition('essentialExpenses')">🎤</button>
+                </div>
+
+                <button class="btn success" onclick="generateFinancialPlan()">Create My Emergency Financial Plan</button>
+            </div>
+
+            <div id="financialResults" style="display: none;">
+                <div class="todo-list">
+                    <h3>🎯 Your Financial Action Plan</h3>
+                    <div id="financialTodos"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thoughts Section -->
+        <div id="thoughts" class="section">
+            <button class="back-btn" onclick="showMainMenu()">← Back to Main Menu</button>
+            <div class="question-card">
+                <h3>🧠 Let's Organize Your Thoughts</h3>
+                
+                <div class="input-group">
+                    <label>What's been on your mind lately? (Brain dump everything)</label>
+                    <textarea id="brainDump" rows="8" placeholder="Write everything that's been worrying you, exciting you, or just floating around in your head..."></textarea>
+                    <button class="voice-btn" onclick="startVoiceRecognition('brainDump')">🎤</button>
+                </div>
+
+                <div class="input-group">
+                    <label>What feels most overwhelming right now?</label>
+                    <textarea id="overwhelmingThoughts" rows="4" placeholder="What specific things make you feel stuck or anxious?"></textarea>
+                    <button class="voice-btn" onclick="startVoiceRecognition('overwhelmingThoughts')">🎤</button>
+                </div>
+
+                <div class="input-group">
+                    <label>Are there any exciting ideas or opportunities you want to pursue?</label>
+                    <textarea id="excitingIdeas" rows="4" placeholder="What gets you energized when you think about it?"></textarea>
+                    <button class="voice-btn" onclick="startVoiceRecognition('excitingIdeas')">🎤</button>
+                </div>
+
+                <button class="btn success" onclick="generateThoughtsPlan()">Organize My Thoughts</button>
+            </div>
+
+            <div id="thoughtsResults" style="display: none;">
+                <div class="todo-list">
+                    <h3>🎯 Your Thought Organization Plan</h3>
+                    <div id="thoughtsTodos"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Digital Section -->
+        <div id="digital" class="section">
+            <button class="back-btn" onclick="showMainMenu()">← Back to Main Menu</button>
+            <div class="question-card">
+                <h3>🔐 Digital Life Cleanup</h3>
+                
+                <div class="input-group">
+                    <label>Do you have all your passwords saved somewhere?</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="passwordStatus" value="yes">
+                            Yes, I have them organized
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="passwordStatus" value="some">
+                            I have some, but not all
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="passwordStatus" value="no">
+                            No, they're scattered everywhere
+                        </label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Which social media accounts do you use for business?</label>
+                    <textarea id="businessAccounts" rows="4" placeholder="Instagram: @username
+Facebook: Page name
+TikTok: @username
+YouTube: Channel name"></textarea>
+                    <button class="voice-btn" onclick="startVoiceRecognition('businessAccounts')">🎤</button>
+                </div>
+
+                <div class="input-group">
+                    <label>How often do you post content currently?</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="postingFrequency" value="daily">
+                            Daily or almost daily
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="postingFrequency" value="weekly">
+                            A few times per week
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="postingFrequency" value="irregular">
+                            Irregularly when I remember
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="postingFrequency" value="rarely">
+                            Rarely or never
+                        </label>
+                    </div>
+                </div>
+
+                <button class="btn success" onclick="generateDigitalPlan()">Organize My Digital Life</button>
+            </div>
+
+            <div id="digitalResults" style="display: none;">
+                <div class="todo-list">
+                    <h3>🎯 Your Digital Organization Plan</h3>
+                    <div id="digitalTodos"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Section -->
+        <div id="content" class="section">
+            <button class="back-btn" onclick="showMainMenu()">← Back to Main Menu</button>
+            <div class="question-card">
+                <h3>📹 Content Planning Made Easy</h3>
+                
+                <div class="input-group">
+                    <label>What type of fitness content do you want to focus on?</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="contentType" value="workouts">
+                            Workout demonstrations and routines
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="contentType" value="tips">
+                            Quick fitness tips and advice
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="contentType" value="products">
+                            Showcasing my fitness products
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="contentType" value="motivation">
+                            Motivational content and personal stories
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="contentType" value="all">
+                            Mix of everything
+                        </label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>How much time can you dedicate to content creation per week?</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="timeAvailable" value="1-2">
+                            1-2 hours per week
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="timeAvailable" value="3-5">
+                            3-5 hours per week
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="timeAvailable" value="6-10">
+                            6-10 hours per week
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="timeAvailable" value="10+">
+                            More than 10 hours per week
+                        </label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>What equipment do you have access to for filming?</label>
+                    <textarea id="equipment" rows="4" placeholder="Phone camera, gym equipment, lighting, microphone, etc."></textarea>
+                    <button class="voice-btn" onclick="startVoiceRecognition('equipment')">🎤</button>
+                </div>
+
+                <button class="btn success" onclick="generateContentPlan()">Create My Content Strategy</button>
+            </div>
+
+            <div id="contentResults" style="display: none;">
+                <div class="todo-list">
+                    <h3>🎯 Your Content Creation Plan</h3>
+                    <div id="contentTodos"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Business Section -->
+        <div id="business" class="section">
+            <button class="back-btn" onclick="showMainMenu()">← Back to Main Menu</button>
+            <div class="question-card">
+                <h3>💪 Growing Your Fitness Business</h3>
+                
+                <div class="input-group">
+                    <label>What fitness products do you want to market?</label>
+                    <textarea id="fitnessProducts" rows="4" placeholder="Describe your products: weights, equipment, accessories, etc."></textarea>
+                    <button class="voice-btn" onclick="startVoiceRecognition('fitnessProducts')">🎤</button>
+                </div>
+
+                <div class="input-group">
+                    <label>Are you currently offering personal training services?</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="trainingStatus" value="yes">
+                            Yes, actively training clients
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="trainingStatus" value="limited">
+                            Yes, but only a few clients
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="trainingStatus" value="want-to">
+                            No, but I want to start
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="trainingStatus" value="no">
+                            Not interested in training right now
+                        </label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>What's your target hourly rate for virtual personal training?</label>
+                    <input type="number" id="hourlyRate" placeholder="Enter desired hourly rate">
+                    <button class="voice-btn" onclick="startVoiceRecognition('hourlyRate')">🎤</button>
+                </div>
+
+                <div class="input-group">
+                    <label>How many new clients would help your financial situation?</label>
+                    <input type="number" id="targetClients" placeholder="Number of clients needed">
+                    <button class="voice-btn" onclick="startVoiceRecognition('targetClients')">🎤</button>
+                </div>
+
+                <button class="btn success" onclick="generateBusinessPlan()">Build My Business Strategy</button>
+            </div>
+
+            <div id="businessResults" style="display: none;">
+                <div class="todo-list">
+                    <h3>🎯 Your Business Development Plan</h3>
+                    <div id="businessTodos"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Routine Section -->
+        <div id="routine" class="section">
+            <button class="back-btn" onclick="showMainMenu()">← Back to Main Menu</button>
+            <div class="question-card">
+                <h3>📅 Building Your Daily & Weekly Routine</h3>
+                
+                <div class="input-group">
+                    <label>What time do you usually wake up?</label>
+                    <input type="time" id="wakeTime">
+                </div>
+
+                <div class="input-group">
+                    <label>What time do you usually go to bed?</label>
+                    <input type="time" id="bedTime">
+                </div>
+
+                <div class="input-group">
+                    <label>What are your most productive hours?</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="productiveTime" value="morning">
+                            Early morning (6 AM - 10 AM)
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="productiveTime" value="midday">
+                            Mid-day (10 AM - 2 PM)
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="productiveTime" value="afternoon">
+                            Afternoon (2 PM - 6 PM)
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="productiveTime" value="evening">
+                            Evening (6 PM - 10 PM)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>What activities help you feel most centered?</label>
+                    <textarea id="centeringActivities" rows="4" placeholder="Exercise, meditation, reading, music, etc."></textarea>
+                    <button class="voice-btn" onclick="startVoiceRecognition('centeringActivities')">🎤</button>
+                </div>
+
+                <button class="btn success" onclick="generateRoutinePlan()">Create My Daily Routine</button>
+            </div>
+
+            <div id="routineResults" style="display: none;">
+                <div class="todo-list">
+                    <h3>🎯 Your Personalized Routine</h3>
+                    <div id="routineTodos"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="celebration" id="celebration">
+        🎉 Great job! You completed a step! 🎉
+    </div>
+
+    <script>
+        // Global variables
+        let currentSection = 'mainMenu';
+        let completedTasks = {};
+        let sectionProgress = {};
+
+        // Speech recognition setup
+        let recognition = null;
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+        }
+
+        // Navigation functions
+        function startSection(sectionName) {
+            hideAllSections();
+            document.getElementById(sectionName).classList.add('active');
+            currentSection = sectionName;
+        }
+
+        function showMainMenu() {
+            hideAllSections();
+            document.getElementById('mainMenu').classList.add('active');
+            currentSection = 'mainMenu';
+        }
+
+        function hideAllSections() {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+        }
+
+        // Voice recognition function
+        function startVoiceRecognition(inputId) {
+            if (!recognition) {
+                alert('Voice recognition not supported in this browser');
+                return;
+            }
+
+            const button = event.target;
+            const input = document.getElementById(inputId);
+            
+            button.classList.add('recording');
+            
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                if (input.tagName === 'TEXTAREA') {
+                    input.value += (input.value ? ' ' : '') + transcript;
+                } else {
+                    input.value = transcript;
+                }
+                button.classList.remove('recording');
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+                button.classList.remove('recording');
+            };
+
+            recognition.onend = function() {
+                button.classList.remove('recording');
+            };
+
+            recognition.start();
+        }
+
+        // Copy to clipboard function
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            });
+        }
+
+        // Financial section functions
+        function generateFinancialPlan() {
+            const urgentBill = document.querySelector('input[name="urgentBill"]:checked')?.value;
+            const daysUntilPayment = document.getElementById('daysUntilPayment').value;
+            const monthlyIncome = document.getElementById('monthlyIncome').value;
+            const essentialExpenses = document.getElementById('essentialExpenses').value;
+
+            if (!urgentBill || !daysUntilPayment || !monthlyIncome) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const todos = [
+                {
+                    id: 'financial_1',
+                    text: 'Call your mortgage/rent company TODAY - explain your situation and ask about payment options',
+                    prompt: 'Help me write a script for calling my landlord or mortgage company to discuss payment difficulties. I need to explain my situation professionally and ask about payment plans or temporary relief options.'
+                },
+                {
+                    id: 'financial_2',
+                    text: 'List all bills by due date in the next 30 days',
+                    prompt: 'Help me create a bill tracking spreadsheet with columns for Bill name, Amount due, Due date, Priority level from 1 to 5, and Payment status. Include formulas to calculate totals.'
+                },
+                {
+                    id: 'financial_3',
+                    text: 'Contact utility companies for budget billing or payment plans',
+                    prompt: 'Write me a template email or script for contacting utility companies to request budget billing plans or payment arrangements due to temporary financial hardship.'
+                }
+            ];
+
+            displayTodos('financialTodos', todos, 'financial');
+            document.getElementById('financialResults').style.display = 'block';
+        }
+
+        // Thoughts section functions
+        function generateThoughtsPlan() {
+            const brainDump = document.getElementById('brainDump').value;
+            const overwhelmingThoughts = document.getElementById('overwhelmingThoughts').value;
+            const excitingIdeas = document.getElementById('excitingIdeas').value;
+
+            if (!brainDump.trim()) {
+                alert('Please do a brain dump first - write down what\'s on your mind');
+                return;
+            }
+
+            const todos = [
+                {
+                    id: 'thoughts_1',
+                    text: 'Categorize your brain dump into: Urgent, Important, Ideas, Worries',
+                    prompt: 'Help me categorize these thoughts I wrote down. Create 4 categories (Urgent, Important, Ideas, Worries) and help me sort these thoughts.'
+                },
+                {
+                    id: 'thoughts_2',
+                    text: 'Pick the top 3 most urgent items and write one small action for each',
+                    prompt: 'From my overwhelming thoughts, help me identify the top 3 most urgent items and suggest one small, doable action step for each.'
+                },
+                {
+                    id: 'thoughts_3',
+                    text: 'Create a "worry time" - 15 minutes daily to process anxious thoughts',
+                    prompt: 'Help me create a structured worry time routine. I want to set aside 15 minutes daily to process anxious thoughts productively instead of letting them overwhelm me throughout the day.'
+                },
+                {
+                    id: 'thoughts_4',
+                    text: 'Write down your exciting ideas in an "opportunity parking lot"',
+                    prompt: 'Help me create an opportunity parking lot system to capture exciting ideas without losing focus on urgent priorities.'
+                },
+                {
+                    id: 'thoughts_5',
+                    text: 'Do a 5-minute morning brain dump for the next week',
+                    prompt: 'Create a simple morning routine for me: 5-minute brain dump to clear my head before starting each day. What should I write about and how do I make this a habit?'
+                }
+            ];
+
+            displayTodos('thoughtsTodos', todos, 'thoughts');
+            document.getElementById('thoughtsResults').style.display = 'block';
+        }
+
+        // Digital section functions
+        function generateDigitalPlan() {
+            const passwordStatus = document.querySelector('input[name="passwordStatus"]:checked')?.value;
+            const businessAccounts = document.getElementById('businessAccounts').value;
+            const postingFrequency = document.querySelector('input[name="postingFrequency"]:checked')?.value;
+
+            if (!passwordStatus || !postingFrequency) {
+                alert('Please answer all questions');
+                return;
+            }
+
+            const todos = [
+                {
+                    id: 'digital_1',
+                    text: 'Set up a password manager (LastPass, 1Password, or Bitwarden)',
+                    prompt: 'Help me choose and set up a password manager. Compare LastPass, 1Password, and Bitwarden for someone who needs simple, secure password storage for business social media accounts.'
+                },
+                {
+                    id: 'digital_2',
+                    text: 'Audit all your social media accounts - write down what you have',
+                    prompt: 'Create a social media audit checklist for me. I need to inventory all my accounts. What information should I record for each account?'
+                },
+                {
+                    id: 'digital_3',
+                    text: 'Update all social media passwords and enable 2FA',
+                    prompt: 'Guide me through securing my social media accounts. I need to update passwords and enable two-factor authentication. What are the security best practices for business accounts?'
+                },
+                {
+                    id: 'digital_4',
+                    text: 'Clean up your social media - delete old, irrelevant posts',
+                    prompt: 'Help me create a social media cleanup strategy. I want to remove old posts that do not align with my fitness business brand. What should I look for and how do I do this efficiently?'
+                },
+                {
+                    id: 'digital_5',
+                    text: 'Create a simple posting schedule and stick to it',
+                    prompt: 'Help me create a realistic, sustainable posting schedule that will help grow my fitness business without overwhelming me.'
+                }
+            ];
+
+            displayTodos('digitalTodos', todos, 'digital');
+            document.getElementById('digitalResults').style.display = 'block';
+        }
+
+        // Content section functions
+        function generateContentPlan() {
+            const contentType = document.querySelector('input[name="contentType"]:checked')?.value;
+            const timeAvailable = document.querySelector('input[name="timeAvailable"]:checked')?.value;
+            const equipment = document.getElementById('equipment').value;
+
+            if (!contentType || !timeAvailable) {
+                alert('Please answer all questions');
+                return;
+            }
+
+            const todos = [
+                {
+                    id: 'content_1',
+                    text: 'Create a list of 20 video topic ideas based on your expertise',
+                    prompt: 'Help me brainstorm 20 fitness video topics for my content. Make them engaging and valuable for my audience.'
+                },
+                {
+                    id: 'content_2',
+                    text: 'Plan your content calendar for the next 2 weeks',
+                    prompt: 'Create a 2-week content calendar for me. Include what to post when and how long each piece should take to create.'
+                },
+                {
+                    id: 'content_3',
+                    text: 'Set up a simple filming schedule that works with your routine',
+                    prompt: 'Help me create a realistic filming schedule. When should I batch film content for maximum efficiency?'
+                },
+                {
+                    id: 'content_4',
+                    text: 'Create templates for video descriptions and hashtags',
+                    prompt: 'Create social media templates for my fitness content. I need description templates and relevant hashtag groups for videos that will help reach my target audience.'
+                },
+                {
+                    id: 'content_5',
+                    text: 'Plan one week of content around showcasing your products',
+                    prompt: 'Help me plan a week of content specifically to showcase my fitness products naturally. How can I demonstrate my products in workouts and tips without being too sales-focused?'
+                },
+                {
+                    id: 'content_6',
+                    text: 'Research what your audience wants to see (check comments and trends)',
+                    prompt: 'Guide me through researching my fitness content audience. What should I look for in comments, what fitness trends should I follow, and how do I turn this research into content ideas?'
+                }
+            ];
+
+            displayTodos('contentTodos', todos, 'content');
+            document.getElementById('contentResults').style.display = 'block';
+        }
+
+        // Business section functions
+        function generateBusinessPlan() {
+            const fitnessProducts = document.getElementById('fitnessProducts').value;
+            const trainingStatus = document.querySelector('input[name="trainingStatus"]:checked')?.value;
+            const hourlyRate = document.getElementById('hourlyRate').value;
+            const targetClients = document.getElementById('targetClients').value;
+
+            if (!trainingStatus) {
+                alert('Please answer all questions');
+                return;
+            }
+
+            const todos = [
+                {
+                    id: 'business_1',
+                    text: 'Write product descriptions for your fitness equipment',
+                    prompt: 'Help me write compelling product descriptions for my fitness equipment. Make them benefit-focused and appealing to fitness enthusiasts who work out at home or in gyms.'
+                },
+                {
+                    id: 'business_2',
+                    text: 'Calculate how much income you need from training clients',
+                    prompt: 'Help me calculate my personal training income needs. How many hours per week do I need to work to meet my financial goals?'
+                },
+                {
+                    id: 'business_3',
+                    text: 'Create a simple virtual training package offer',
+                    prompt: 'Help me design virtual personal training packages. What packages should I offer and how should I price them?'
+                },
+                {
+                    id: 'business_4',
+                    text: 'Set up a basic booking system for training sessions',
+                    prompt: 'Recommend simple, affordable booking systems for virtual personal training. I need something easy to use that handles scheduling, payments, and video calls.'
+                },
+                {
+                    id: 'business_5',
+                    text: 'Create social media posts to promote your training services',
+                    prompt: 'Write 5 social media posts promoting my virtual personal training services. Make them authentic and show the value I provide without being too sales-focused.'
+                },
+                {
+                    id: 'business_6',
+                    text: 'Research where to sell your fitness products online',
+                    prompt: 'Help me research the best platforms to sell fitness products. Compare options like Instagram Shop, Facebook Marketplace, eBay, Amazon, and fitness-specific platforms.'
+                }
+            ];
+
+            displayTodos('businessTodos', todos, 'business');
+            document.getElementById('businessResults').style.display = 'block';
+        }
+
+        // Routine section functions
+        function generateRoutinePlan() {
+            const wakeTime = document.getElementById('wakeTime').value;
+            const bedTime = document.getElementById('bedTime').value;
+            const productiveTime = document.querySelector('input[name="productiveTime"]:checked')?.value;
+            const centeringActivities = document.getElementById('centeringActivities').value;
+
+            if (!wakeTime || !bedTime || !productiveTime) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const todos = [
+                {
+                    id: 'routine_1',
+                    text: 'Create a simple 10-minute morning routine',
+                    prompt: 'Design a 10-minute morning routine for me. Keep it simple and energizing.'
+                },
+                {
+                    id: 'routine_2',
+                    text: 'Block your most important work during peak energy hours',
+                    prompt: 'Help me plan my daily schedule. How should I structure my day to do my most important work when I have the most energy?'
+                },
+                {
+                    id: 'routine_3',
+                    text: 'Plan your weekly content creation sessions',
+                    prompt: 'Create a weekly schedule for my content creation. When should I batch create content for best results?'
+                },
+                {
+                    id: 'routine_4',
+                    text: 'Set up an evening wind-down routine',
+                    prompt: 'Design a 30-minute evening routine to help me wind down before bed.'
+                },
+                {
+                    id: 'routine_5',
+                    text: 'Schedule weekly planning time (same day/time each week)',
+                    prompt: 'Help me choose the best day and time for weekly planning. When should I review my week, plan ahead, and set priorities?'
+                },
+                {
+                    id: 'routine_6',
+                    text: 'Create a simple daily checklist with your top 3 priorities',
+                    prompt: 'Design a daily checklist template for me. Include space for my top 3 priorities, content creation tasks, business activities, and personal wellness. Keep it simple and motivating.'
+                }
+            ];
+
+            displayTodos('routineTodos', todos, 'routine');
+            document.getElementById('routineResults').style.display = 'block';
+        }
+        function displayTodos(containerId, todos, sectionName) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            todos.forEach(todo => {
+                const todoItem = document.createElement('div');
+                todoItem.className = 'todo-item';
+
+                todoItem.innerHTML = '<input type="checkbox" class="todo-checkbox"><span class="todo-text">' + todo.text + '</span>';
+                container.appendChild(todoItem);
+
+                // Add LLM prompt
+                const promptDiv = document.createElement('div');
+                promptDiv.className = 'llm-prompt';
+                promptDiv.innerHTML = '<strong>🤖 If you get stuck, copy this prompt:</strong><br>' + todo.prompt;
+                
+                // Create copy button
+                const copyButton = document.createElement('button');
+                copyButton.className = 'copy-btn';
+                copyButton.textContent = 'Copy';
+                copyButton.onclick = function() {
+                    copyToClipboard(todo.prompt);
+                };
+                
+                promptDiv.appendChild(copyButton);
+                container.appendChild(promptDiv);
+            });
+        }
+    </script>
+</body>
+</html>
